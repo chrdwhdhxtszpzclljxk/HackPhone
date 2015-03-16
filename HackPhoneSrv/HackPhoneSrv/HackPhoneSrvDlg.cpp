@@ -6,6 +6,7 @@
 #include "HackPhoneSrv.h"
 #include "HackPhoneSrvDlg.h"
 #include "afxdialogex.h"
+#include "SocketSrv.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -96,8 +97,9 @@ BOOL CHackPhoneSrvDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// 设置大图标
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
-	// TODO:  在此添加额外的初始化代码
-
+	m_ss = new CSocketSrv();
+	m_ss->Create(1996);
+	m_ss->Listen();
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 

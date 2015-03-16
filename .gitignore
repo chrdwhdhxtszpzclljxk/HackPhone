@@ -1,0 +1,5 @@
+*.opensdf
+*.sdf
+*.ipch
+/HackPhoneSrv/HackPhoneSrv/Debug/
+/HackPhoneSrv/Debug/

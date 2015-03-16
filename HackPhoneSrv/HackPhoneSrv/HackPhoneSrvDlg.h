@@ -4,7 +4,7 @@
 
 #pragma once
 
-
+class CSocketSrv;
 // CHackPhoneSrvDlg 对话框
 class CHackPhoneSrvDlg : public CDialogEx
 {
@@ -22,6 +22,7 @@ public:
 // 实现
 protected:
 	HICON m_hIcon;
+	CSocketSrv* m_ss;
 
 	// 生成的消息映射函数
 	virtual BOOL OnInitDialog();
