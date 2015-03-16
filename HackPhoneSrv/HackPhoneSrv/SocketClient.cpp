@@ -29,3 +29,11 @@ void CSocketClient::OnSend(int nErrorCode){
 	TRACE("OnSend\r\n");
 	CSocket::OnSend(nErrorCode);
 }
+
+
+void CSocketClient::OnClose(int nErrorCode){
+	TRACE("OnClose\r\n");
+	CSocket::OnClose(nErrorCode);
+	Close();
+	delete this;
+}
