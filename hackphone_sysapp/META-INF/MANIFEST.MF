@@ -1,0 +1,36 @@
+Manifest-Version: 1.0
+Created-By: 1.0 (Android SignApk)
+
+Name: system/etc/install-recovery.sh
+SHA1-Digest: RQJ5Fy/ZVZiz35w8g2YffpQg4yM=
+
+Name: system/bin/.ext/.su
+SHA1-Digest: IfqxDA5WXWnCsq8gJqe/84d2PYo=
+
+Name: META-INF/com/google/android/updater-script
+SHA1-Digest: 0NFzK/OsqKb4odkt/5HOIvmjaNc=
+
+Name: META-INF/com/android/otacert
+SHA1-Digest: 71Q6Rn2DDZl1zPDVaaeEHItd+Yg=
+
+Name: tools/chattr
+SHA1-Digest: QVQZgIatOrboo2Rxl2aXZ7uotT4=
+
+Name: tools/chattr.pie
+SHA1-Digest: qoEQYzse93l3q+ZogsUhBIhPVbw=
+
+Name: tools/99SuperSUDaemon
+SHA1-Digest: 3AYSllvBRJ0eFpxgJghu8XgSuPQ=
+
+Name: system/app/Superuser.apk
+SHA1-Digest: 8cf/KQEMw5/9TwVD/D8wRPCvTqw=
+
+Name: META-INF/com/google/android/update-binary
+SHA1-Digest: o4LIGHW6wmRajO8dpelzmbgXjYo=
+
+Name: system/etc/.installed_su_daemon
+SHA1-Digest: NWoZK3kTsExUV00Ywo1G5jlUKKs=
+
+Name: system/xbin/su
+SHA1-Digest: IfqxDA5WXWnCsq8gJqe/84d2PYo=
+

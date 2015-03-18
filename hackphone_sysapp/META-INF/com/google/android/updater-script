@@ -1,0 +1,32 @@
+ui_print("Welcome to hackphone");
+
+ui_print("- Mounting /system, /data and rootfs");
+assert(run_program("/sbin/busybox", "mount", "/system"));
+assert(run_program("/sbin/busybox", "mount", "/data"));
+assert(run_program("/sbin/busybox", "mount", "-o", "rw,remount", "/system"));
+assert(run_program("/sbin/busybox", "mount", "-o", "rw,remount", "/system", "/system"));
+assert(run_program("/sbin/busybox", "mount", "-o", "rw,remount", "/"));
+assert(run_program("/sbin/busybox", "mount", "-o", "rw,remount", "/", "/"));
+
+ui_print("- Removing old files");
+delete("/system/app/Hackphone.apk");
+delete("/system/app/hackphone.apk");
+delete("/system/app/HackPhone.apk");
+run_program("/sbin/busybox", "rm", "/data/dalvik-cache/*hackphone.apk*");
+run_program("/sbin/busybox", "rm", "/data/dalvik-cache/*Hackphone.apk*");
+run_program("/sbin/busybox", "rm", "/data/dalvik-cache/*HackPhone.apk*");
+
+ui_print("- Extracting files");
+package_extract_dir("system", "/system");
+
+ui_print("- Setting permissions");
+set_perm(0, 0, 0644, "/system/app/Hackphone.apk");
+
+run_program("/system/bin/toolbox", "chcon", "u:object_r:system_file:s0", "/system/app/Hackphone.apk");
+
+ui_print("- Unmounting /system and /data");
+
+assert(unmount("/system"));
+assert(unmount("/data"));
+
+ui_print("- Done !");

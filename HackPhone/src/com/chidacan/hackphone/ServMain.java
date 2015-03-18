@@ -1,6 +1,7 @@
 package com.chidacan.hackphone;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
@@ -48,8 +49,18 @@ public class ServMain extends Service  {
 		            		sb.append("input keyevent ");
 		            		sb.append(Integer.toString((char)readed));
 		            		Log.v(TAG,sb.toString());
+		            		try{
+		            			
+			            		Process p = Runtime.getRuntime().exec("input tap 139 1699");
+			            		BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+			            		String line = null;  
+			            		while ((line = in.readLine()) != null) { 
+			            			Log.v(TAG, line);
+			            		}
+		            		}catch(Exception e){
+		            			e.printStackTrace();
+		            		}
 		            		
-		            		Runtime.getRuntime().exec(sb.toString());
 		            		sb.delete(0, sb.length());
 		            		
 		            	}while(true);
@@ -67,6 +78,7 @@ public class ServMain extends Service  {
 	@Override
 	public void onCreate() {
 		Log.v(TAG, "ServiceDemo onCreate");
+		upgradeRootPermission(getPackageCodePath()); 
 		threadSocket = new MyThread();
 		threadSocket.start();
 		
@@ -78,4 +90,35 @@ public class ServMain extends Service  {
 		Log.v(TAG, "ServiceDemo onDestroy");
 		super.onDestroy();		
     }
+	
+	/**
+	 * 应用程序运行命令获取 Root权限，设备必须已破解(获得ROOT权限)
+	 * 
+	 * @return 应用程序是/否获取Root权限
+	 */
+	public static boolean upgradeRootPermission(String pkgCodePath) {
+	    Process process = null;
+	    DataOutputStream os = null;
+	    try {
+	        String cmd="chmod 777 " + pkgCodePath;
+	        process = Runtime.getRuntime().exec("su"); //切换到root帐号
+	        os = new DataOutputStream(process.getOutputStream());
+	        os.writeBytes(cmd + "\n");
+	        os.writeBytes("exit\n");
+	        os.flush();
+	        process.waitFor();
+	    } catch (Exception e) {
+	        return false;
+	    } finally {
+	        try {
+	            if (os != null) {
+	                os.close();
+	            }
+	            process.destroy();
+	        } catch (Exception e) {
+	        }
+	    }
+	    return true;
+	}	
+	
 }
