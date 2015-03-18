@@ -15,3 +15,4 @@ device.touch(800,1600,'DOWN_AND_UP')##
 device.touch(800,1450,'DOWN_AND_UP')#9
 device.touch(800,1200,'DOWN_AND_UP')#6
 device.touch(800,1000,'DOWN_AND_UP')#3
+#http://blog.csdn.net/whackw/article/details/44114189
