@@ -3,3 +3,6 @@
 *.ipch
 /HackPhoneSrv/HackPhoneSrv/Debug/
 /HackPhoneSrv/Debug/
+/HackPhone/bin/
+/HackPhone/libs/
+/HackPhone/gen/

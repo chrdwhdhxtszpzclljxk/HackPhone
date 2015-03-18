@@ -10,15 +10,13 @@
 
 #include "resource.h"		// 主符号
 
-
-// CHackPhoneSrvApp: 
-// 有关此类的实现，请参阅 HackPhoneSrv.cpp
-//
+class CSocketSrv;
 
 class CHackPhoneSrvApp : public CWinApp
 {
 public:
 	CHackPhoneSrvApp();
+	CSocketSrv* m_ss;
 
 // 重写
 public:

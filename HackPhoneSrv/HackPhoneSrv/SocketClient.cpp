@@ -4,21 +4,14 @@
 #include "stdafx.h"
 #include "HackPhoneSrv.h"
 #include "SocketClient.h"
+#include "SocketSrv.h"
 
-
-// CSocketClient
-
-CSocketClient::CSocketClient()
-{
+CSocketClient::CSocketClient(uint64_t ccid) : m_ccid(ccid){
 }
 
-CSocketClient::~CSocketClient()
-{
+CSocketClient::~CSocketClient(){
+	TRACE("client free(%d)\r\n",(uint32_t)m_ccid);
 }
-
-
-// CSocketClient ³ÉÔ±º¯Êý
-
 
 void CSocketClient::OnReceive(int nErrorCode){
 	CSocket::OnReceive(nErrorCode);
@@ -34,6 +27,5 @@ void CSocketClient::OnSend(int nErrorCode){
 void CSocketClient::OnClose(int nErrorCode){
 	TRACE("OnClose\r\n");
 	CSocket::OnClose(nErrorCode);
-	Close();
-	delete this;
+	theApp.m_ss->FreeClient(m_ccid);
 }

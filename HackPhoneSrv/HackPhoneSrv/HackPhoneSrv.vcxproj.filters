@@ -39,6 +39,9 @@
     <ClInclude Include="SocketClient.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="WndNumpad.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="HackPhoneSrv.cpp">
@@ -54,6 +57,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="SocketClient.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="WndNumpad.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

@@ -63,6 +63,9 @@ BEGIN_MESSAGE_MAP(CHackPhoneSrvDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_WM_DESTROY()
+	ON_BN_CLICKED(IDOK, &CHackPhoneSrvDlg::OnBnClickedOk)
+	ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 
@@ -96,10 +99,13 @@ BOOL CHackPhoneSrvDlg::OnInitDialog()
 	//  执行此操作
 	SetIcon(m_hIcon, TRUE);			// 设置大图标
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
+	LPCTSTR className = AfxRegisterWndClass(CS_VREDRAW | CS_HREDRAW);
+	m_wndNumpad.Create(className, _T("NumPad01"), WS_CHILD | WS_VISIBLE, CRect(0, 0, 0, 0), this, 0);
 
-	m_ss = new CSocketSrv();
-	m_ss->Create(1996);
-	m_ss->Listen();
+	theApp.m_ss = new CSocketSrv();
+	theApp.m_ss->Create(1996);
+	theApp.m_ss->Listen();
+	PostMessage(WM_SIZE);
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -152,3 +158,21 @@ HCURSOR CHackPhoneSrvDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+
+
+void CHackPhoneSrvDlg::OnDestroy(){
+	CDialogEx::OnDestroy();
+	theApp.m_ss->Close();
+	delete theApp.m_ss;
+}
+
+
+void CHackPhoneSrvDlg::OnBnClickedOk(){
+}
+
+
+void CHackPhoneSrvDlg::OnSize(UINT nType, int cx, int cy){
+	CDialogEx::OnSize(nType, cx, cy);
+	CRect rc; GetClientRect(rc);
+	if (IsWindow(m_wndNumpad.GetSafeHwnd())) m_wndNumpad.SetWindowPos(NULL, rc.left, rc.top, rc.Width(), rc.Height(), SWP_NOZORDER);
+}

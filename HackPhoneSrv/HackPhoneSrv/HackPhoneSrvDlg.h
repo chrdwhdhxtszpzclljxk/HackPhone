@@ -3,8 +3,8 @@
 //
 
 #pragma once
+#include "WndNumpad.h"
 
-class CSocketSrv;
 // CHackPhoneSrvDlg 对话框
 class CHackPhoneSrvDlg : public CDialogEx
 {
@@ -21,8 +21,8 @@ public:
 
 // 实现
 protected:
-	HICON m_hIcon;
-	CSocketSrv* m_ss;
+	HICON m_hIcon; 
+	CWndNumpad m_wndNumpad;
 
 	// 生成的消息映射函数
 	virtual BOOL OnInitDialog();
@@ -30,4 +30,8 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg void OnDestroy();
+	afx_msg void OnBnClickedOk();
+	afx_msg void OnSize(UINT nType, int cx, int cy);
 };
