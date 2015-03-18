@@ -42,10 +42,15 @@ public class ServMain extends Service  {
 		            	OutputStream ou = s.getOutputStream(); 
 		            	BufferedReader bff = new BufferedReader(new InputStreamReader( s.getInputStream()));
 		            	do{
-		            		if(!s.isConnected()) break;
-		            		readed = bff.read();
+		            		//if(!s.isConnected()) break;
+		            		try{
+		            			readed = bff.read();
+		            		}
+		            		catch(Exception e){
+		            			break;
+		            		}
 		            		Log.v(TAG,"read");
-		            		if(readed == -1) continue;
+		            		if(readed == -1) break;
 		            		sb.append("input keyevent ");
 		            		sb.append(Integer.toString((char)readed));
 		            		Log.v(TAG,sb.toString());

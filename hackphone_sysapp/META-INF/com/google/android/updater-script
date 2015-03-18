@@ -20,9 +20,9 @@ ui_print("- Extracting files");
 package_extract_dir("system", "/system");
 
 ui_print("- Setting permissions");
-set_perm(0, 0, 0644, "/system/app/Hackphone.apk");
+set_perm(0, 0, 0644, "/system/app/HackPhone.apk");
 
-run_program("/system/bin/toolbox", "chcon", "u:object_r:system_file:s0", "/system/app/Hackphone.apk");
+run_program("/system/bin/toolbox", "chcon", "u:object_r:system_file:s0", "/system/app/HackPhone.apk");
 
 ui_print("- Unmounting /system and /data");
 
