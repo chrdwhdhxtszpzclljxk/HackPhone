@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 //import com.android.internal.telephony.*;
 
 import android.telephony.TelephonyManager; 
@@ -33,9 +34,22 @@ public class ActMain extends Activity {
         setContentView(R.layout.act_main);
     	Intent it = new Intent(ServMain.ACTION);
     	it.setClass(this, com.chidacan.hackphone.ServMain.class);
+    	it.putExtra("port", 1996);
+    	it.putExtra("ip", "192.168.18.101");
     	startService(it);  
 
     }
+    
+    public void bnset_onClick(View v){
+    	EditText ip = (EditText) findViewById(R.id.ip);
+    	EditText port = (EditText) findViewById(R.id.port);
+    	Intent it = new Intent(ServMain.ACTION);
+    	it.setClass(this, com.chidacan.hackphone.ServMain.class);
+    	it.putExtra("port", Integer.valueOf(port.getText().toString()));
+    	it.putExtra("ip", ip.getText().toString());
+    	startService(it);      	
+    }
+    
     
     public void bn10086_click(View v){
     }
