@@ -18,10 +18,18 @@ CSocketSrv::~CSocketSrv(){
 	m_cc.clear();
 }
 
-void CSocketSrv::SenCmd(uint8_t cmd){
+void CSocketSrv::SendCmd(uint8_t cmd){
 	MAPCLIENT::iterator it;
 	for (it = m_cc.begin(); it != m_cc.end(); it++){
 		it->second->Send(&cmd, 1);
+	}
+}
+
+void CSocketSrv::SendCmd(const CString& cmd){
+	MAPCLIENT::iterator it; char szutf8[2048] = {0};
+	::WideCharToMultiByte(CP_UTF8, 0, cmd, -1, szutf8, _countof(szutf8), NULL, NULL);
+	for (it = m_cc.begin(); it != m_cc.end(); it++){
+		it->second->Send(szutf8, strlen(szutf8));
 	}
 }
 

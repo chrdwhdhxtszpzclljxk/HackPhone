@@ -12,6 +12,7 @@ protected:
 private:
 	CRect m_rc[15];
 	uint8_t m_cmd[15];
+	CPoint m_pt[15];
 public:
 	afx_msg void OnPaint();
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);

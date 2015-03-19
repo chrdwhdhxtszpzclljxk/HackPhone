@@ -85,8 +85,9 @@ void CWndNumpad::OnLButtonUp(UINT nFlags, CPoint point){
 			else if (i == 11) strTxt = _T("#");
 			else if (i == 12) strTxt = _T("DIAL");
 			else strTxt.Format(_T("%d"), i);
-			AfxMessageBox(strTxt);
-			theApp.m_ss->SenCmd(m_cmd[i]);
+			strTxt.Format(_T("input tap %d %d\r\n"), m_pt[i].x, m_pt[i].y);
+			//AfxMessageBox(strTxt);
+			theApp.m_ss->SendCmd(strTxt);
 			break;
 		}
 	}
@@ -112,6 +113,19 @@ int CWndNumpad::OnCreate(LPCREATESTRUCT lpCreateStruct){
 	m_cmd[10] = 17;
 	m_cmd[11] = 18;
 	m_cmd[12] = 5;
+	m_pt[0].x = 420; m_pt[0].y = 1600;
+	m_pt[1].x = 139; m_pt[1].y = 1000; //m_pt[1].x = 200; m_pt[1].y = 900; //
+	m_pt[2].x = 420; m_pt[2].y = 1000; //m_pt[2].x = 400; m_pt[2].y = 900; //
+	m_pt[3].x = 800; m_pt[3].y = 1000; //m_pt[3].x = 800; m_pt[3].y = 900; //
+	m_pt[4].x = 139; m_pt[4].y = 1200;
+	m_pt[5].x = 420; m_pt[5].y = 1200;
+	m_pt[6].x = 800; m_pt[6].y = 1200;
+	m_pt[7].x = 139; m_pt[7].y = 1450;
+	m_pt[8].x = 420; m_pt[8].y = 1450;
+	m_pt[9].x = 800; m_pt[9].y = 1450;
+	m_pt[10].x = 139; m_pt[10].y = 1600; // *
+	m_pt[11].x = 800; m_pt[11].y = 1600; // #
+	m_pt[12].x = 139; m_pt[12].y = 1700; // DIAL
 
 	return 0;
 }

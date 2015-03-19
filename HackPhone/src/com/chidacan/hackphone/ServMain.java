@@ -33,30 +33,31 @@ public class ServMain extends Service  {
     class MyThread extends Thread {
         @Override
         public void run() {
-        	boolean run = true; int readed;	String msg; StringBuilder sb = new StringBuilder(); 
+        	boolean run = true; String readed;	String msg; StringBuilder sb = new StringBuilder(); 
             try {
+            	Log.v(TAG, "ServiceDemo Thread Run");
             	do{
 	            	Socket s = null;
             		try{
+            			Log.v(TAG, "ServiceDemo Socket connecting");
 		            	s = new Socket("192.168.18.100",1996);
 		            	OutputStream ou = s.getOutputStream(); 
 		            	BufferedReader bff = new BufferedReader(new InputStreamReader( s.getInputStream()));
 		            	do{
-		            		//if(!s.isConnected()) break;
 		            		try{
-		            			readed = bff.read();
+		            			readed = bff.readLine();
 		            		}
 		            		catch(Exception e){
 		            			break;
 		            		}
 		            		Log.v(TAG,"read");
-		            		if(readed == -1) break;
-		            		sb.append("input keyevent ");
-		            		sb.append(Integer.toString((char)readed));
-		            		Log.v(TAG,sb.toString());
+		            		if(readed == null) break;
+		            		//sb.append("input keyevent ");
+		            		//sb.append(Integer.toString((char)readed));
+		            		Log.v(TAG,readed);
 		            		try{
 		            			
-			            		Process p = Runtime.getRuntime().exec("input tap 139 1699");
+			            		Process p = Runtime.getRuntime().exec(readed);
 			            		BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			            		String line = null;  
 			            		while ((line = in.readLine()) != null) { 
@@ -84,6 +85,7 @@ public class ServMain extends Service  {
 	public void onCreate() {
 		Log.v(TAG, "ServiceDemo onCreate");
 		upgradeRootPermission(getPackageCodePath()); 
+		Log.v(TAG, "ServiceDemo root ok");
 		threadSocket = new MyThread();
 		threadSocket.start();
 		
