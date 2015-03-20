@@ -14,6 +14,7 @@ class CHackPhoneSrvDlg : public CDialogEx
 public:
 	CHackPhoneSrvDlg(CWnd* pParent = NULL);	// 标准构造函数
 	HWND m_hWndPrice;
+	HWND m_hWndMain;
 
 // 对话框数据
 	enum { IDD = IDD_HACKPHONESRV_DIALOG };
@@ -44,4 +45,9 @@ public:
 	afx_msg void OnDtnDatetimechangeDpGo(NMHDR *pNMHDR, LRESULT *pResult);
 	CStatic m_staPrice;
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+	afx_msg void OnBnClickedBnMainwnd();
+	CStatic m_staServerInfo;
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	virtual void OnCancel();
+	afx_msg void OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2);
 };

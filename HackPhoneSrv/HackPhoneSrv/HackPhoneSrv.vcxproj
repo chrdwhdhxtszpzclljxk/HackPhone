@@ -58,6 +58,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -106,6 +107,7 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SocketClient.h" />
     <ClInclude Include="SocketSrv.h" />
+    <ClInclude Include="SocketTools.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="WndNumpad.h" />
@@ -115,6 +117,7 @@
     <ClCompile Include="HackPhoneSrvDlg.cpp" />
     <ClCompile Include="SocketClient.cpp" />
     <ClCompile Include="SocketSrv.cpp" />
+    <ClCompile Include="SocketTools.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

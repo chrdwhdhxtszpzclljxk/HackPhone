@@ -7,12 +7,14 @@
 #include "HackPhoneSrvDlg.h"
 #include "afxdialogex.h"
 #include "SocketSrv.h"
+#include "SocketTools.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
 #define ID_TIMER_GETPRICE 1
+#define ID_TIMER_GETSERVERINFO 2
 
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
 
@@ -60,6 +62,7 @@ void CHackPhoneSrvDlg::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_DP_GO, m_dpGo);
 	DDX_Control(pDX, IDC_STATIC_PRICE, m_staPrice);
+	DDX_Control(pDX, IDC_STATIC_SERVERINFO, m_staServerInfo);
 }
 
 BEGIN_MESSAGE_MAP(CHackPhoneSrvDlg, CDialogEx)
@@ -73,6 +76,8 @@ BEGIN_MESSAGE_MAP(CHackPhoneSrvDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BN_FINDPRICE, &CHackPhoneSrvDlg::OnBnClickedBnFindprice)
 	ON_NOTIFY(DTN_DATETIMECHANGE, IDC_DP_GO, &CHackPhoneSrvDlg::OnDtnDatetimechangeDpGo)
 	ON_WM_CTLCOLOR()
+	ON_BN_CLICKED(IDC_BN_MAINWND, &CHackPhoneSrvDlg::OnBnClickedBnMainwnd)
+	ON_WM_HOTKEY()
 END_MESSAGE_MAP()
 
 
@@ -115,7 +120,9 @@ BOOL CHackPhoneSrvDlg::OnInitDialog()
 	theApp.m_ss->Listen();
 	PostMessage(WM_SIZE);
 	SetTimer(ID_TIMER_GETPRICE, 10, NULL);
+	SetTimer(ID_TIMER_GETSERVERINFO, 1000, NULL);
 	SetWindowPos(&CWnd::wndTopMost, 0, 0, 0, 0, SWP_NOSIZE);
+	RegisterHotKey(GetSafeHwnd(), 1000, 0, VK_ESCAPE);
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -175,6 +182,7 @@ void CHackPhoneSrvDlg::OnDestroy(){
 	CDialogEx::OnDestroy();
 	theApp.m_ss->Close();
 	delete theApp.m_ss;
+	UnregisterHotKey(GetSafeHwnd(), 1000);
 }
 
 
@@ -189,11 +197,37 @@ void CHackPhoneSrvDlg::OnSize(UINT nType, int cx, int cy){
 	if (IsWindow(m_wndNumpad.GetSafeHwnd())) m_wndNumpad.SetWindowPos(NULL, rc.left, rc.top, rc.Width(), rc.Height(), SWP_NOZORDER);
 }
 
+//TErrorBoxForm
+
+BOOL CALLBACK CloseErrorBoxForm(HWND hwnd, LPARAM lParam){
+	TCHAR szClass[1024] = { 0 }; RECT rc; CHackPhoneSrvDlg* pThis = (CHackPhoneSrvDlg*)lParam;
+	::GetClassName(hwnd, szClass, _countof(szClass)); // TMainform
+	if ((_tcsicmp(szClass, _T("TErrorBoxForm")) == 0)){
+		if (hwnd != NULL){
+			::PostMessage(hwnd, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(230, 230));
+			::PostMessage(hwnd, WM_LBUTTONUP, MK_LBUTTON, MAKELPARAM(230, 230));
+		}
+		return FALSE;
+	}
+	return TRUE;
+}
 
 void CHackPhoneSrvDlg::OnTimer(UINT_PTR nIDEvent){
-	TCHAR tcPrice[1024] = { 0 }; CTime timego; CString strCmd; int len = 0,i = 0,idx = 0;
+	TCHAR tcPrice[1024] = { 0 }; CTime timego; CString strCmd; int len = 0, i = 0, idx = 0; CRect rc300; CPoint pt;
 	CDialogEx::OnTimer(nIDEvent);
-	if (ID_TIMER_GETPRICE == nIDEvent && ::IsWindow(m_hWndPrice)){
+	if (ID_TIMER_GETSERVERINFO == nIDEvent){
+		::SetWindowTextA(m_staServerInfo.GetSafeHwnd(), GetCurServer());
+	}else if (ID_TIMER_GETPRICE == nIDEvent && ::IsWindow(m_hWndPrice)){
+		rc300.left = 630; rc300.top = 348; rc300.right = 680; rc300.bottom = 375;
+		GetCursorPos(&pt); 
+		::ScreenToClient(m_hWndMain,&pt);
+		
+		//TRACE(_T("(%d < %d < %d)(%d < %d < %d)\r\n"), rc300.left, pt.x, rc300.right, rc300.top, pt.y, rc300.bottom);
+		//if (rc300.PtInRect(pt)){
+		::PostMessage(m_hWndMain, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(660, 366));
+		::PostMessage(m_hWndMain, WM_LBUTTONUP, MK_LBUTTON, MAKELPARAM(660, 366));
+		//}
+		
 		::SendMessage(m_hWndPrice, WM_GETTEXT, _countof(tcPrice), (LPARAM)tcPrice);
 		len = _tcslen(tcPrice);
 		if (len > 0){
@@ -227,6 +261,7 @@ void CHackPhoneSrvDlg::OnTimer(UINT_PTR nIDEvent){
 			*/
 		}
 	}
+	EnumWindows(CloseErrorBoxForm, (LPARAM)this);
 }
 
 
@@ -234,6 +269,9 @@ BOOL CALLBACK EnumChildProc2(_In_  HWND hwnd, _In_  LPARAM lParam){
 	TCHAR szClass[1024] = { 0 }; CHackPhoneSrvDlg* pThis = (CHackPhoneSrvDlg*)lParam;
 	::GetClassName(hwnd, szClass, _countof(szClass));
 	//if ((_tcsicmp(szClass, _T("TNoPasteEdit")) == 0)){
+	::ShowWindow(hwnd, SW_SHOW);
+	::EnableWindow(hwnd, TRUE);
+
 	if ((_tcsicmp(szClass, _T("TEdit")) == 0)){
 		if (hwnd != NULL && IsWindowVisible(hwnd)){
 				pThis->m_hWndPrice = hwnd;
@@ -254,6 +292,7 @@ BOOL CALLBACK EnumMainForm(HWND hwnd, LPARAM lParam){
 		if (hwnd != NULL){
 			::ShowWindow(hwnd, SW_SHOW);
 			::EnableWindow(hwnd, TRUE);
+			pThis->m_hWndMain = hwnd;
 			EnumChildWindows(hwnd, EnumChildProc2, lParam);
 		}
 		return FALSE;
@@ -283,4 +322,41 @@ HBRUSH CHackPhoneSrvDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor){
 	}
 	
 	return hbr;
+}
+
+
+void CHackPhoneSrvDlg::OnBnClickedBnMainwnd(){
+	//634,366 // 682,395
+	//::PostMessage(m_hWndMain, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(660,366));
+	//::PostMessage(m_hWndMain, WM_LBUTTONUP, MK_LBUTTON, MAKELPARAM(660, 366));
+
+	BreakNetbidclient();
+
+	//::PostMessage(m_hWndMain, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(366, 660));
+	//::PostMessage(m_hWndMain, WM_LBUTTONUP, MK_LBUTTON, MAKELPARAM(366, 660));
+}
+
+
+BOOL CHackPhoneSrvDlg::PreTranslateMessage(MSG* pMsg){
+	if (pMsg->message == WM_KEYDOWN) {
+		switch (pMsg->wParam) {
+		case VK_ESCAPE: return TRUE; //ESC
+		}
+	}
+	return CDialogEx::PreTranslateMessage(pMsg);
+}
+
+
+void CHackPhoneSrvDlg::OnCancel(){
+	// TODO:  在此添加专用代码和/或调用基类
+	CDialogEx::OnCancel();
+	//ShowWindow(SW_MINIMIZE);
+}
+
+
+void CHackPhoneSrvDlg::OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2){
+	if (nHotKeyId == 1000){
+		BreakNetbidclient();
+	}
+	CDialogEx::OnHotKey(nHotKeyId, nKey1, nKey2);
 }
