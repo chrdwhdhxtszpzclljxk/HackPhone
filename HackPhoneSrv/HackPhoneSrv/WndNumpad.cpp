@@ -39,11 +39,12 @@ END_MESSAGE_MAP()
 void CWndNumpad::OnPaint(){
 	CPaintDC dc(this); // device context for painting
 	CString strTxt;
-	for (int i = 0; i <= 12; i++){
+	for (int i = 0; i <= 13; i++){
 		dc.FillSolidRect(m_rc[i], RGB(255, 0, 0));
 		if (i == 10) strTxt = _T("*"); 
 		else if (i == 11) strTxt = _T("#");
-		else if (i == 12) strTxt = _T("DIAL");
+		else if (i == 12) strTxt = _T("CALL");
+		else if (i == 13) strTxt = _T("DIAL");
 		else strTxt.Format(_T("%d"), i);
 		dc.DrawText(strTxt, m_rc[i], DT_SINGLELINE | DT_CENTER | DT_VCENTER);
 	}
@@ -73,23 +74,34 @@ void CWndNumpad::OnSize(UINT nType, int cx, int cy){
 	m_rc[10].top = m_rc[7].bottom; m_rc[10].left = m_rc[7].left; m_rc[10].bottom = m_rc[10].top + h; m_rc[10].right = m_rc[10].left + w;
 	m_rc[0].top = m_rc[10].top; m_rc[0].left = m_rc[10].right; m_rc[0].bottom = m_rc[10].bottom; m_rc[0].right = m_rc[0].left + w;
 	m_rc[11].top = m_rc[10].top; m_rc[11].left = m_rc[0].right; m_rc[11].bottom = m_rc[10].bottom; m_rc[11].right = m_rc[11].left + w;
-	m_rc[12].top = m_rc[10].bottom; m_rc[12].left = m_rc[10].left; m_rc[12].bottom = m_rc[12].top + h; m_rc[12].right = m_rc[12].left + w * 3;
+	m_rc[12].top = m_rc[10].bottom; m_rc[12].left = m_rc[10].left; m_rc[12].bottom = m_rc[12].top + h; m_rc[12].right = m_rc[12].left + w;
+	m_rc[13].top = m_rc[10].bottom; m_rc[13].left = m_rc[12].right; m_rc[13].bottom = m_rc[13].top + h; m_rc[13].right = m_rc[13].left + w*2;
 }
 
 
 void CWndNumpad::OnLButtonUp(UINT nFlags, CPoint point){
-	CString strTxt;
-	for (int i = 0; i <= 12; i++){
+	CString strTxt; int i = 0; CArray<CString> cmds;
+	for (i = 0; i <= 13; i++){
 		if (m_rc[i].PtInRect(point)){
-			if (i == 10) strTxt = _T("*");
-			else if (i == 11) strTxt = _T("#");
-			else if (i == 12) strTxt = _T("DIAL");
-			else strTxt.Format(_T("%d"), i);
+			//if (i == 10) strTxt = _T("*");
+			//else if (i == 11) strTxt = _T("#");
+			//else if (i == 12) strTxt = _T("DIAL");
+			//else strTxt.Format(_T("%d"), i);
 			strTxt.Format(_T("input tap %d %d\r\n"), m_pt[i].x, m_pt[i].y);
 			//AfxMessageBox(strTxt);
 			theApp.m_ss->SendCmd(strTxt);
 			break;
 		}
+	}
+
+	if (i == 14){
+		strTxt = "input tap 0 0\ninput tap 420 1600\ninput tap 139 1000\ninput tap 420 1000\ninput tap 420 1000\n"
+			"input tap 800 1600\n";
+		//cmds.Add(_T("input tap 420 1600\n"));
+		//cmds.Add(_T("input tap 139 1000\n"));
+		//cmds.Add(_T("input tap 420 1000\n"));
+		//cmds.Add(_T("input tap 420 1000\n"));
+		theApp.m_ss->SendCmd(strTxt);
 	}
 
 	CWnd::OnLButtonUp(nFlags, point);
@@ -125,7 +137,8 @@ int CWndNumpad::OnCreate(LPCREATESTRUCT lpCreateStruct){
 	m_pt[9].x = 800; m_pt[9].y = 1450;
 	m_pt[10].x = 139; m_pt[10].y = 1600; // *
 	m_pt[11].x = 800; m_pt[11].y = 1600; // #
-	m_pt[12].x = 139; m_pt[12].y = 1700; // DIAL
+	m_pt[12].x = 139; m_pt[12].y = 1700; // CALL
+	m_pt[13].x = 420; m_pt[13].y = 1700; // DIAL
 
 	return 0;
 }

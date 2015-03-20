@@ -37,7 +37,8 @@ public class ServMain extends Service  {
     class MyThread extends Thread {
         @Override
         public void run() {
-        	boolean run = true; String readed;	String msg; StringBuilder sb = new StringBuilder(); 
+        	boolean run = true; String readed;	String msg; StringBuilder sb = new StringBuilder();
+        	long lastcmdt = 0,nowcmdt = 0,spant = 0;
             try {
             	Log.v(TAG, "ServiceDemo Thread Run");
             	do{
@@ -62,13 +63,16 @@ public class ServMain extends Service  {
 		            		//sb.append(Integer.toString((char)readed));
 		            		Log.v(TAG,readed);
 		            		try{
-		            			
+		            			nowcmdt = System.nanoTime();
+		            			spant = (nowcmdt - lastcmdt) / 1000000;
+		            			if((nowcmdt - lastcmdt) < 100){sleep(100 - spant);}
 			            		Process p = Runtime.getRuntime().exec(readed);
 			            		BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			            		String line = null;  
 			            		while ((line = in.readLine()) != null) { 
 			            			Log.v(TAG, line);
 			            		}
+			            		lastcmdt = nowcmdt;
 		            		}catch(Exception e){
 		            			e.printStackTrace();
 		            		}

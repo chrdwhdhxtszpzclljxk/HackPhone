@@ -9,7 +9,7 @@ public:
 
 protected:
 	DECLARE_MESSAGE_MAP()
-private:
+public:
 	CRect m_rc[15];
 	uint8_t m_cmd[15];
 	CPoint m_pt[15];
