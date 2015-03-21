@@ -15,6 +15,7 @@ public:
 	CHackPhoneSrvDlg(CWnd* pParent = NULL);	// 标准构造函数
 	HWND m_hWndPrice;
 	HWND m_hWndMain;
+	HWND m_hWndImage;
 
 // 对话框数据
 	enum { IDD = IDD_HACKPHONESRV_DIALOG };
@@ -50,4 +51,6 @@ public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	virtual void OnCancel();
 	afx_msg void OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2);
+	CButton m_chkAutoClose;
+	CListBox m_listInfo;
 };

@@ -107,7 +107,7 @@ DWORD BreakNetbidclient(){
 }
 
 CStringA GetCurServer(){
-	PMIB_TCPTABLE pTcpTable = NULL; DWORD dwSize = 0, dwRetVal = ERROR_SUCCESS; char* premoteip;
+	PMIB_TCPTABLE pTcpTable = NULL; DWORD dwSize = 0, dwRetVal = ERROR_SUCCESS; char* premoteip; CStringA strRet;
 	struct   in_addr rip, lip; char  szrip[32] = { 0 }, szlip[32] = { 0 };
 
 	if (GetTcpTable(pTcpTable, &dwSize, TRUE) == ERROR_INSUFFICIENT_BUFFER)	{//获得pTcpTable所需要的真实长度,dwSize
@@ -115,12 +115,15 @@ CStringA GetCurServer(){
 	}
 	else return "";
 
+	CTime t = CTime::GetCurrentTime();
+	strRet.Format(("%02d:%02d:%02d "), t.GetHour(), t.GetMinute(), t.GetSecond());
 	if ((dwRetVal = GetTcpTable(pTcpTable, &dwSize, TRUE)) == NO_ERROR){
 		for (int i = 0; i < (int)pTcpTable->dwNumEntries; i++){
 			rip.S_un.S_addr = pTcpTable->table[i].dwRemoteAddr; lip.S_un.S_addr = pTcpTable->table[i].dwLocalAddr;
 			premoteip = inet_ntoa(rip);
 			if (strcmp(premoteip, "222.73.114.22") == 0 || strcmp(premoteip, "222.73.114.3") == 0){ // 找到国服务器。
-				return premoteip;
+				strRet.Append(premoteip);
+				return strRet;
 				break;
 			}
 			//if (pTcpTable->table[i].dwState == MIB_TCP_STATE_LISTEN) pTcpTable->table[i].dwRemotePort = 0;//监听端口，远程主机端口为0，但函数返回是有值的，不知道它是怎么考虑的
@@ -147,5 +150,5 @@ CStringA GetCurServer(){
 		LocalFree(lpMsgBuf);
 	}
 	free(pTcpTable);
-	return "";
+	return strRet;
 }

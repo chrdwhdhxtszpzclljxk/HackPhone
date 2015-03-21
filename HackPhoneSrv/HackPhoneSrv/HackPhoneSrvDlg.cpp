@@ -63,6 +63,8 @@ void CHackPhoneSrvDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_DP_GO, m_dpGo);
 	DDX_Control(pDX, IDC_STATIC_PRICE, m_staPrice);
 	DDX_Control(pDX, IDC_STATIC_SERVERINFO, m_staServerInfo);
+	DDX_Control(pDX, IDC_CHECK_AUTOCLOSE, m_chkAutoClose);
+	DDX_Control(pDX, IDC_LIST_INFO, m_listInfo);
 }
 
 BEGIN_MESSAGE_MAP(CHackPhoneSrvDlg, CDialogEx)
@@ -113,7 +115,7 @@ BOOL CHackPhoneSrvDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 	LPCTSTR className = AfxRegisterWndClass(CS_VREDRAW | CS_HREDRAW);
 	m_wndNumpad.Create(className, _T("NumPad01"), WS_CHILD  , CRect(0, 0, 0, 0), this, 0);
-	m_fontPrice.CreatePointFont(680,_T("黑体"));
+	m_fontPrice.CreatePointFont(660,_T("黑体"));
 	m_staPrice.SetFont(&m_fontPrice);
 	theApp.m_ss = new CSocketSrv();
 	theApp.m_ss->Create(1996);
@@ -123,7 +125,7 @@ BOOL CHackPhoneSrvDlg::OnInitDialog()
 	SetTimer(ID_TIMER_GETSERVERINFO, 1000, NULL);
 	SetWindowPos(&CWnd::wndTopMost, 0, 0, 0, 0, SWP_NOSIZE);
 	RegisterHotKey(GetSafeHwnd(), 1000, 0, VK_ESCAPE);
-
+	m_chkAutoClose.SetCheck(TRUE);
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -197,13 +199,76 @@ void CHackPhoneSrvDlg::OnSize(UINT nType, int cx, int cy){
 	if (IsWindow(m_wndNumpad.GetSafeHwnd())) m_wndNumpad.SetWindowPos(NULL, rc.left, rc.top, rc.Width(), rc.Height(), SWP_NOZORDER);
 }
 
-//TErrorBoxForm
+BOOL CALLBACK GetImageFormChild(_In_  HWND hwnd, _In_  LPARAM lParam){
+	TCHAR szClass[1024] = { 0 }; CHackPhoneSrvDlg* pThis = (CHackPhoneSrvDlg*)lParam; static time_t tLast = 0;
+	::GetClassName(hwnd, szClass, _countof(szClass));
+	//if ((_tcsicmp(szClass, _T("TNoPasteEdit")) == 0)){
+	//::ShowWindow(hwnd, SW_SHOW);
+	//::EnableWindow(hwnd, TRUE);
 
+	if ((_tcsicmp(szClass, _T("TEdit")) == 0)){
+		if (hwnd != NULL){
+			TCHAR tcPrice[1024] = { 0 };
+			::SendMessage(hwnd, WM_GETTEXT, _countof(tcPrice), (LPARAM)tcPrice);
+			if (_tcslen(tcPrice) == 6 && ::IsWindowVisible(hwnd)){
+				time_t tNow = time(NULL);
+				TRACE("Last %s\r\n", tcPrice);
+
+				::PostMessage(pThis->m_hWndImage, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(130, 230));
+				::PostMessage(pThis->m_hWndImage, WM_LBUTTONUP, MK_LBUTTON, MAKELPARAM(130, 230));
+				pThis->m_hWndImage = NULL;
+				//AfxMessageBox(_T("ok")); 
+			}
+			return FALSE;
+		}
+		return TRUE;
+	}
+	return TRUE;
+}
+
+//TErrorBoxForm
+BOOL CALLBACK CloseImageForm(HWND hwnd, LPARAM lParam){
+	TCHAR szClass[1024] = { 0 }; RECT rc; CHackPhoneSrvDlg* pThis = (CHackPhoneSrvDlg*)lParam;
+	::GetClassName(hwnd, szClass, _countof(szClass)); // TMainform
+	if ((_tcsicmp(szClass, _T("TImageForm")) == 0)){
+		if (hwnd != NULL){
+			pThis->m_hWndImage = hwnd;
+			EnumChildWindows(hwnd, GetImageFormChild, lParam);
+		}
+		return FALSE;
+	}
+	return TRUE;
+}
+
+
+BOOL CALLBACK GetErrorBoxFormChild(_In_  HWND hwnd, _In_  LPARAM lParam){
+	TCHAR szClass[1024] = { 0 }; CHackPhoneSrvDlg* pThis = (CHackPhoneSrvDlg*)lParam;
+	::GetClassName(hwnd, szClass, _countof(szClass));
+	//if ((_tcsicmp(szClass, _T("TNoPasteEdit")) == 0)){
+	::ShowWindow(hwnd, SW_SHOW);
+	::EnableWindow(hwnd, TRUE);
+
+	if ((_tcsicmp(szClass, _T("TMemo")) == 0)){
+		if (hwnd != NULL ){
+			TCHAR tcPrice[1024] = { 0 };
+			::SendMessage(hwnd, WM_GETTEXT, _countof(tcPrice), (LPARAM)tcPrice);
+			CTime t = CTime::GetCurrentTime();
+			CString strInfo; strInfo.Format(_T("%02d:%02d:%02d - 自动关闭提示[%s]"), t.GetHour(),t.GetMinute(),t.GetSecond(),tcPrice);
+			pThis->m_listInfo.InsertString(0,strInfo);
+			return FALSE;
+		}
+		return TRUE;
+	}
+	return TRUE;
+}
+
+//TErrorBoxForm
 BOOL CALLBACK CloseErrorBoxForm(HWND hwnd, LPARAM lParam){
 	TCHAR szClass[1024] = { 0 }; RECT rc; CHackPhoneSrvDlg* pThis = (CHackPhoneSrvDlg*)lParam;
 	::GetClassName(hwnd, szClass, _countof(szClass)); // TMainform
 	if ((_tcsicmp(szClass, _T("TErrorBoxForm")) == 0)){
 		if (hwnd != NULL){
+			EnumChildWindows(hwnd, GetErrorBoxFormChild, lParam);
 			::PostMessage(hwnd, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(230, 230));
 			::PostMessage(hwnd, WM_LBUTTONUP, MK_LBUTTON, MAKELPARAM(230, 230));
 		}
@@ -261,7 +326,10 @@ void CHackPhoneSrvDlg::OnTimer(UINT_PTR nIDEvent){
 			*/
 		}
 	}
-	EnumWindows(CloseErrorBoxForm, (LPARAM)this);
+	if (m_chkAutoClose.GetCheck()){
+		EnumWindows(CloseErrorBoxForm, (LPARAM)this);
+		EnumWindows(CloseImageForm, (LPARAM)this);
+	}
 }
 
 
@@ -272,7 +340,7 @@ BOOL CALLBACK EnumChildProc2(_In_  HWND hwnd, _In_  LPARAM lParam){
 	::ShowWindow(hwnd, SW_SHOW);
 	::EnableWindow(hwnd, TRUE);
 
-	if ((_tcsicmp(szClass, _T("TEdit")) == 0)){
+	if ((_tcsicmp(szClass, _T("TNoPasteEdit")) == 0)){
 		if (hwnd != NULL && IsWindowVisible(hwnd)){
 				pThis->m_hWndPrice = hwnd;
 				return FALSE;
