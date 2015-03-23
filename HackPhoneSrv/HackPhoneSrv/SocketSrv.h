@@ -13,6 +13,8 @@ public:
 	CSocketClient* AllocClient();
 	void FreeClient(uint64_t);
 	void SendCmd(uint16_t);
+	void SendCmd(uint16_t*, int);
+	
 	void SendCmd(const CString&);
 public:
 	std::atomic<uint64_t> m_ccid;

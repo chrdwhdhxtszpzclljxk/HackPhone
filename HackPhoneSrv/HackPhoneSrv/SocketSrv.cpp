@@ -18,6 +18,13 @@ CSocketSrv::~CSocketSrv(){
 	m_cc.clear();
 }
 
+void CSocketSrv::SendCmd(uint16_t* cmd, int len){
+	MAPCLIENT::iterator it; char szutf8[2048] = { 0 };
+	for (it = m_cc.begin(); it != m_cc.end(); it++){
+		it->second->Send(cmd, len);
+	}
+}
+
 void CSocketSrv::SendCmd(uint16_t cmd){
 	MAPCLIENT::iterator it;
 	for (it = m_cc.begin(); it != m_cc.end(); it++){

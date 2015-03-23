@@ -80,7 +80,7 @@ void CWndNumpad::OnSize(UINT nType, int cx, int cy){
 
 
 void CWndNumpad::OnLButtonUp(UINT nFlags, CPoint point){
-	CString strTxt; int i = 0; CArray<CString> cmds;
+	CString strTxt; int i = 0; CArray<CString> cmds; TCHAR cmd[20] = { 0 };
 	for (i = 0; i <= 13; i++){
 		if (m_rc[i].PtInRect(point)){
 			//if (i == 10) strTxt = _T("*");
@@ -89,7 +89,9 @@ void CWndNumpad::OnLButtonUp(UINT nFlags, CPoint point){
 			//else strTxt.Format(_T("%d"), i);
 			//strTxt.Format(_T("input tap %d %d\r\n"), m_pt[i].x, m_pt[i].y);
 			//AfxMessageBox(strTxt);
-			theApp.m_ss->SendCmd(m_cmd[i]);
+			cmd[0] = m_cmd[i];
+			cmd[1] = _T('\n');
+			theApp.m_ss->SendCmd(cmd);
 			break;
 		}
 	}

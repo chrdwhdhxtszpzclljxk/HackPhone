@@ -30,6 +30,8 @@ import android.telephony.TelephonyManager;
 
 public class ActMain extends Activity {
 	Intent intent;
+	private static final String mip = "210.192.111.117";
+	private static final String mport = "1996";
 	private static final String TAG = "ServMain" ;
 	private MsgReceiver msgReceiver;  
 	
@@ -48,13 +50,13 @@ public class ActMain extends Activity {
     	Intent it = new Intent(ServMain.ACTION);
     	it.setClass(this, com.chidacan.hackphone.ServMain.class);
     	it.putExtra("port", 1996);
-    	it.putExtra("ip", "192.168.18.100");
+    	it.putExtra("ip", mip);
     	startService(it); 
     	Log.v(TAG,"startService");
     	EditText ip = (EditText) findViewById(R.id.ip);
     	EditText port = (EditText) findViewById(R.id.port);
-    	ip.setText("192.168.18.100");
-    	port.setText("1996");
+    	ip.setText(mip);
+    	port.setText(mport);
     }
     
     public void bnset_onClick(View v){
@@ -64,24 +66,26 @@ public class ActMain extends Activity {
     	it.setClass(this, com.chidacan.hackphone.ServMain.class);
     	it.putExtra("port", Integer.valueOf(port.getText().toString()));
     	it.putExtra("ip", ip.getText().toString());
-    	//startService(it);      	
+    	startService(it);      	
     }
     
     
     public void bn10086_click(View v){
+    	/*
     	Phone phone = PhoneFactory.getDefaultPhone();
     	try {
 			phone.dial("10086");
 		} catch (CallStateException e) {
 			Log.v(TAG,e.getMessage());
 		}
+    	*/
     	//dail("10086");
     	Log.v(TAG,"10086 ok!");
     	
     }
 
     public void bn01_click(View v){
-    	
+    	/*
     	try{
     	Phone phone = PhoneFactory.getDefaultPhone();
     	Log.v(TAG,phone.getPhoneName());
@@ -90,6 +94,7 @@ public class ActMain extends Activity {
     		Log.v(TAG,e.getMessage());
     	}
     	Log.v(TAG,"dtmf done");
+    	*/
     	//sendDTMF((char)1);
     }
     
@@ -147,11 +152,15 @@ public class ActMain extends Activity {
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			int progress = intent.getIntExtra("progress", 0);
+			String progress = intent.getStringExtra("progress");
 	    	try{
 	        	Phone phone = PhoneFactory.getDefaultPhone();
 	        	Log.v(TAG,phone.getPhoneName());
-	        	phone.sendDtmf((char)progress);
+	        	for(char c : progress.toCharArray()){
+	        		sendDTMF(c);
+	        	}
+	        	//phone.sendBurstDtmf(progress, 0, 0, null);
+	    		//sendDTMF((char)progress);
 	        	}catch(Exception e){
 	        		Log.v(TAG,e.getMessage());
 	        	}

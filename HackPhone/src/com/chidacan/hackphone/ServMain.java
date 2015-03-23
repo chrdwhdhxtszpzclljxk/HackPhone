@@ -6,8 +6,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 
-import com.android.internal.telephony.Phone;
-import com.android.internal.telephony.PhoneFactory;
+//import com.android.internal.telephony.Phone;
+//import com.android.internal.telephony.PhoneFactory;
 
 import android.app.Service;
 import android.content.ComponentName;
@@ -40,7 +40,7 @@ public class ServMain extends Service  {
     class MyThread extends Thread {
         @Override
         public void run() {
-        	boolean run = true; int readed;
+        	boolean run = true; String readed;
             try {
             	Log.v(TAG, "ServiceDemo Thread Run");
             	do{
@@ -54,14 +54,15 @@ public class ServMain extends Service  {
 		            	BufferedReader bff = new BufferedReader(new InputStreamReader( s.getInputStream()));
 		            	do{
 		            		try{
-		            			//readed = bff.readLine();
-		            			readed = bff.read();
+		            			readed = bff.readLine();
+		            			//readed = bff.read();
 		            		}
 		            		catch(Exception e){
 		            			break;
 		            		}
 		            		Log.v(TAG,"read");
-		            		if(readed == -1) break;
+		            		if(readed == null) break;
+		            		Log.v(TAG,readed);
 		            		// ·¢ËÍ°´¼üdtmf
 		            		//try{
 		                	//Phone phone = PhoneFactory.getDefaultPhone();
