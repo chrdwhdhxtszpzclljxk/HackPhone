@@ -12,7 +12,7 @@ public:
 	virtual void OnAccept(int nErrorCode);
 	CSocketClient* AllocClient();
 	void FreeClient(uint64_t);
-	void SendCmd(uint8_t);
+	void SendCmd(uint16_t);
 	void SendCmd(const CString&);
 public:
 	std::atomic<uint64_t> m_ccid;

@@ -61,7 +61,7 @@ void CHackPhoneSrvDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_DP_GO, m_dpGo);
-	DDX_Control(pDX, IDC_STATIC_PRICE, m_staPrice);
+	//DDX_Control(pDX, IDC_STATIC_PRICE, m_staPrice);
 	DDX_Control(pDX, IDC_STATIC_SERVERINFO, m_staServerInfo);
 	DDX_Control(pDX, IDC_CHECK_AUTOCLOSE, m_chkAutoClose);
 	DDX_Control(pDX, IDC_LIST_INFO, m_listInfo);
@@ -114,17 +114,21 @@ BOOL CHackPhoneSrvDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// 设置大图标
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 	LPCTSTR className = AfxRegisterWndClass(CS_VREDRAW | CS_HREDRAW);
-	m_wndNumpad.Create(className, _T("NumPad01"), WS_CHILD  , CRect(0, 0, 0, 0), this, 0);
+	m_wndNumpad.Create(className, _T("NumPad01"), WS_CHILD | WS_VISIBLE , CRect(0, 0, 0, 0), this, 0);
 	m_fontPrice.CreatePointFont(660,_T("黑体"));
-	m_staPrice.SetFont(&m_fontPrice);
+	//m_staPrice.SetFont(&m_fontPrice);
 	theApp.m_ss = new CSocketSrv();
 	theApp.m_ss->Create(1996);
 	theApp.m_ss->Listen();
 	PostMessage(WM_SIZE);
-	SetTimer(ID_TIMER_GETPRICE, 10, NULL);
+	SetTimer(ID_TIMER_GETPRICE, 20, NULL);
 	SetTimer(ID_TIMER_GETSERVERINFO, 1000, NULL);
 	SetWindowPos(&CWnd::wndTopMost, 0, 0, 0, 0, SWP_NOSIZE);
 	RegisterHotKey(GetSafeHwnd(), 1000, 0, VK_ESCAPE);
+	if (!RegisterHotKey(GetSafeHwnd(), 1001, MOD_CONTROL, VK_F12)){
+		DWORD err = GetLastError();
+		AfxMessageBox(_T("F12 失败！"));
+	}
 	m_chkAutoClose.SetCheck(TRUE);
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -185,6 +189,7 @@ void CHackPhoneSrvDlg::OnDestroy(){
 	theApp.m_ss->Close();
 	delete theApp.m_ss;
 	UnregisterHotKey(GetSafeHwnd(), 1000);
+	UnregisterHotKey(GetSafeHwnd(), 1001);
 }
 
 
@@ -229,9 +234,9 @@ BOOL CALLBACK GetImageFormChild(_In_  HWND hwnd, _In_  LPARAM lParam){
 //TErrorBoxForm
 BOOL CALLBACK CloseImageForm(HWND hwnd, LPARAM lParam){
 	TCHAR szClass[1024] = { 0 }; RECT rc; CHackPhoneSrvDlg* pThis = (CHackPhoneSrvDlg*)lParam;
-	::GetClassName(hwnd, szClass, _countof(szClass)); // TMainform
-	if ((_tcsicmp(szClass, _T("TImageForm")) == 0)){
-		if (hwnd != NULL){
+	::GetClassName(hwnd, szClass, _countof(szClass)); // TImageForm
+	if ((_tcsicmp(szClass, _T("TImageCodeForm")) == 0) || (_tcsicmp(szClass, _T("TImageForm")) == 0)){
+		if (hwnd != NULL && ::IsWindowVisible(hwnd)){
 			pThis->m_hWndImage = hwnd;
 			EnumChildWindows(hwnd, GetImageFormChild, lParam);
 		}
@@ -286,44 +291,45 @@ void CHackPhoneSrvDlg::OnTimer(UINT_PTR nIDEvent){
 		rc300.left = 630; rc300.top = 348; rc300.right = 680; rc300.bottom = 375;
 		GetCursorPos(&pt); 
 		::ScreenToClient(m_hWndMain,&pt);
-		
+
 		//TRACE(_T("(%d < %d < %d)(%d < %d < %d)\r\n"), rc300.left, pt.x, rc300.right, rc300.top, pt.y, rc300.bottom);
-		//if (rc300.PtInRect(pt)){
-		::PostMessage(m_hWndMain, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(660, 366));
-		::PostMessage(m_hWndMain, WM_LBUTTONUP, MK_LBUTTON, MAKELPARAM(660, 366));
-		//}
-		
-		::SendMessage(m_hWndPrice, WM_GETTEXT, _countof(tcPrice), (LPARAM)tcPrice);
-		len = _tcslen(tcPrice);
-		if (len > 0){
-			m_staPrice.SetWindowText(tcPrice);
-			/*
-			CTime t = CTime::GetCurrentTime();
-			m_dpGo.GetTime(timego);
-			//if ((t.GetHour() * 10000 + t.GetMinute() * 100 + t.GetSecond()) > 112945){
-			if (t.GetHour() == timego.GetHour() && t.GetMinute() == timego.GetMinute() &&
+		if (rc300.PtInRect(pt)){
+			::PostMessage(m_hWndMain, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(660, 366));
+			::PostMessage(m_hWndMain, WM_LBUTTONUP, MK_LBUTTON, MAKELPARAM(660, 366));
+
+
+			::SendMessage(m_hWndPrice, WM_GETTEXT, _countof(tcPrice), (LPARAM)tcPrice);
+			len = _tcslen(tcPrice);
+			if (len > 0){
+				//m_staPrice.SetWindowText(tcPrice);
+				/*
+				CTime t = CTime::GetCurrentTime();
+				m_dpGo.GetTime(timego);
+				//if ((t.GetHour() * 10000 + t.GetMinute() * 100 + t.GetSecond()) > 112945){
+				if (t.GetHour() == timego.GetHour() && t.GetMinute() == timego.GetMinute() &&
 				t.GetSecond() >= timego.GetSecond()){
 				for (i = 0; i < len; i++){
-					switch (tcPrice[i]){
-					case _T('0'): idx = 0; break;
-					case _T('1'): idx = 1; break;
-					case _T('2'): idx = 2; break;
-					case _T('3'): idx = 3; break;
-					case _T('4'): idx = 4; break;
-					case _T('5'): idx = 5; break;
-					case _T('6'): idx = 6; break;
-					case _T('7'): idx = 7; break;
-					case _T('8'): idx = 8; break;
-					case _T('9'): idx = 9; break;
-					}
-					strCmd.AppendFormat(_T("input tap %d %d\n"), m_wndNumpad.m_pt[idx].x, m_wndNumpad.m_pt[idx].y);
+				switch (tcPrice[i]){
+				case _T('0'): idx = 0; break;
+				case _T('1'): idx = 1; break;
+				case _T('2'): idx = 2; break;
+				case _T('3'): idx = 3; break;
+				case _T('4'): idx = 4; break;
+				case _T('5'): idx = 5; break;
+				case _T('6'): idx = 6; break;
+				case _T('7'): idx = 7; break;
+				case _T('8'): idx = 8; break;
+				case _T('9'): idx = 9; break;
+				}
+				strCmd.AppendFormat(_T("input tap %d %d\n"), m_wndNumpad.m_pt[idx].x, m_wndNumpad.m_pt[idx].y);
 				}
 				strCmd.AppendFormat(_T("input tap %d %d\n"), m_wndNumpad.m_pt[11].x, m_wndNumpad.m_pt[11].y);
 				AfxMessageBox(strCmd);
 				theApp.m_ss->SendCmd(strCmd);
 				KillTimer(ID_TIMER_GETPRICE);
+				}
+				*/
 			}
-			*/
 		}
 	}
 	if (m_chkAutoClose.GetCheck()){
@@ -337,8 +343,8 @@ BOOL CALLBACK EnumChildProc2(_In_  HWND hwnd, _In_  LPARAM lParam){
 	TCHAR szClass[1024] = { 0 }; CHackPhoneSrvDlg* pThis = (CHackPhoneSrvDlg*)lParam;
 	::GetClassName(hwnd, szClass, _countof(szClass));
 	//if ((_tcsicmp(szClass, _T("TNoPasteEdit")) == 0)){
-	::ShowWindow(hwnd, SW_SHOW);
-	::EnableWindow(hwnd, TRUE);
+	//::ShowWindow(hwnd, SW_SHOW);
+	//::EnableWindow(hwnd, TRUE);
 
 	if ((_tcsicmp(szClass, _T("TNoPasteEdit")) == 0)){
 		if (hwnd != NULL && IsWindowVisible(hwnd)){
@@ -358,8 +364,8 @@ BOOL CALLBACK EnumMainForm(HWND hwnd, LPARAM lParam){
 	::GetClassName(hwnd, szClass, _countof(szClass)); // TMainform
 	if ((_tcsicmp(szClass, _T("TMainForm")) == 0)){
 		if (hwnd != NULL){
-			::ShowWindow(hwnd, SW_SHOW);
-			::EnableWindow(hwnd, TRUE);
+			//::ShowWindow(hwnd, SW_SHOW);
+			//::EnableWindow(hwnd, TRUE);
 			pThis->m_hWndMain = hwnd;
 			EnumChildWindows(hwnd, EnumChildProc2, lParam);
 		}
@@ -371,7 +377,7 @@ BOOL CALLBACK EnumMainForm(HWND hwnd, LPARAM lParam){
 void CHackPhoneSrvDlg::OnBnClickedBnFindprice(){
 	TCHAR tcPrice[1024] = { 0 };
 	EnumWindows(EnumMainForm, (LPARAM)this);
-	::SendMessage(this->m_hWndPrice, WM_GETTEXT, _countof(tcPrice), (LPARAM)tcPrice);
+	//::SendMessage(this->m_hWndPrice, WM_GETTEXT, _countof(tcPrice), (LPARAM)tcPrice);
 	//AfxMessageBox(tcPrice);
 }
 
@@ -424,7 +430,15 @@ void CHackPhoneSrvDlg::OnCancel(){
 
 void CHackPhoneSrvDlg::OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2){
 	if (nHotKeyId == 1000){
-		BreakNetbidclient();
+		CString str = BreakNetbidclient();
+		if (str.IsEmpty()) str = _T("无可用链接");
+		CTime t = CTime::GetCurrentTime();
+		CString strInfo; strInfo.Format(_T("%02d:%02d:%02d - 已经断开 %s"), t.GetHour(), t.GetMinute(), t.GetSecond(), str);
+		m_listInfo.InsertString(0, strInfo);
+	}
+	else if (nHotKeyId == 1001){
+		::PostMessage(m_hWndMain, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(815, 415));
+		::PostMessage(m_hWndMain, WM_LBUTTONUP, MK_LBUTTON, MAKELPARAM(815, 415));
 	}
 	CDialogEx::OnHotKey(nHotKeyId, nKey1, nKey2);
 }

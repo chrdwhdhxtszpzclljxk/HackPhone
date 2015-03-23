@@ -6,6 +6,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 
+import com.android.internal.telephony.Phone;
+import com.android.internal.telephony.PhoneFactory;
+
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -37,8 +40,7 @@ public class ServMain extends Service  {
     class MyThread extends Thread {
         @Override
         public void run() {
-        	boolean run = true; String readed;	String msg; StringBuilder sb = new StringBuilder();
-        	long lastcmdt = 0,nowcmdt = 0,spant = 0;
+        	boolean run = true; int readed;
             try {
             	Log.v(TAG, "ServiceDemo Thread Run");
             	do{
@@ -52,36 +54,29 @@ public class ServMain extends Service  {
 		            	BufferedReader bff = new BufferedReader(new InputStreamReader( s.getInputStream()));
 		            	do{
 		            		try{
-		            			readed = bff.readLine();
+		            			//readed = bff.readLine();
+		            			readed = bff.read();
 		            		}
 		            		catch(Exception e){
 		            			break;
 		            		}
 		            		Log.v(TAG,"read");
-		            		if(readed == null) break;
-		            		//sb.append("input keyevent ");
-		            		//sb.append(Integer.toString((char)readed));
-		            		Log.v(TAG,readed);
-		            		try{
-		            			nowcmdt = System.nanoTime();
-		            			spant = (nowcmdt - lastcmdt) / 1000000;
-		            			if((nowcmdt - lastcmdt) < 100){sleep(100 - spant);}
-			            		Process p = Runtime.getRuntime().exec(readed);
-			            		BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
-			            		String line = null;  
-			            		while ((line = in.readLine()) != null) { 
-			            			Log.v(TAG, line);
-			            		}
-			            		lastcmdt = nowcmdt;
-		            		}catch(Exception e){
-		            			e.printStackTrace();
-		            		}
-		            		
-		            		sb.delete(0, sb.length());
+		            		if(readed == -1) break;
+		            		// 发送按键dtmf
+		            		//try{
+		                	//Phone phone = PhoneFactory.getDefaultPhone();
+		                	//phone.sendDtmf((char) readed);
+		            		//}catch(Exception e){
+		            		//	e.printStackTrace();
+		            		//}
+		            		Intent intent = new Intent("android.intent.action.MAIN");
+		            		intent.putExtra("progress", readed);
+		            		sendBroadcast(intent); 
 		            		
 		            	}while(true);
             		}catch(Exception e){
-            			e.printStackTrace();
+            			sleep(1000);
+            			//e.printStackTrace();
             		}
             		if(s != null) s.close();
             	}while(run);
@@ -94,8 +89,7 @@ public class ServMain extends Service  {
 	@Override
 	public void onCreate() {
 		Log.v(TAG, "ServiceDemo onCreate");
-		upgradeRootPermission(getPackageCodePath()); 
-		Log.v(TAG, "ServiceDemo root ok");
+
 		threadSocket = new MyThread();
 		threadSocket.start();
 		
@@ -108,34 +102,6 @@ public class ServMain extends Service  {
 		super.onDestroy();		
     }
 	
-	/**
-	 * 应用程序运行命令获取 Root权限，设备必须已破解(获得ROOT权限)
-	 * 
-	 * @return 应用程序是/否获取Root权限
-	 */
-	public static boolean upgradeRootPermission(String pkgCodePath) {
-	    Process process = null;
-	    DataOutputStream os = null;
-	    try {
-	        String cmd="chmod 777 " + pkgCodePath;
-	        process = Runtime.getRuntime().exec("su"); //切换到root帐号
-	        os = new DataOutputStream(process.getOutputStream());
-	        os.writeBytes(cmd + "\n");
-	        os.writeBytes("exit\n");
-	        os.flush();
-	        process.waitFor();
-	    } catch (Exception e) {
-	        return false;
-	    } finally {
-	        try {
-	            if (os != null) {
-	                os.close();
-	            }
-	            process.destroy();
-	        } catch (Exception e) {
-	        }
-	    }
-	    return true;
-	}	
+
 	
 }

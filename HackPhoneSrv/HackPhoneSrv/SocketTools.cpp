@@ -60,13 +60,14 @@ DWORD DelTCPConnect(){
 	return dwRetVal;
 }
 
-DWORD BreakNetbidclient(){
+CString BreakNetbidclient(){
 	PMIB_TCPTABLE pTcpTable = NULL; DWORD dwSize = 0, dwRetVal = ERROR_SUCCESS; char* premoteip;
-	struct   in_addr rip, lip; char  szrip[32] = { 0 }, szlip[32] = { 0 };
+	struct   in_addr rip, lip; char  szrip[32] = { 0 }, szlip[32] = { 0 }; CString strRet;
 	
 	if (GetTcpTable(pTcpTable, &dwSize, TRUE) == ERROR_INSUFFICIENT_BUFFER)	{//获得pTcpTable所需要的真实长度,dwSize
 		pTcpTable = (MIB_TCPTABLE*)malloc((UINT)dwSize);
-	} else return dwRetVal;
+	}
+	else return strRet;
 
 	if ((dwRetVal = GetTcpTable(pTcpTable, &dwSize, TRUE)) == NO_ERROR){
 		for (int i = 0; i < (int)pTcpTable->dwNumEntries; i++){
@@ -78,6 +79,7 @@ DWORD BreakNetbidclient(){
 				remote = pTcpTable->table[i].dwRemoteAddr;
 				remotept = pTcpTable->table[i].dwRemotePort;
 				DelTCPConnect();
+				strRet = premoteip;
 				break;
 			}
 			//if (pTcpTable->table[i].dwState == MIB_TCP_STATE_LISTEN) pTcpTable->table[i].dwRemotePort = 0;//监听端口，远程主机端口为0，但函数返回是有值的，不知道它是怎么考虑的
@@ -103,7 +105,7 @@ DWORD BreakNetbidclient(){
 		LocalFree(lpMsgBuf);
 	}
 	free(pTcpTable);
-	return dwRetVal;
+	return strRet;
 }
 
 CStringA GetCurServer(){

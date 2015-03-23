@@ -1,4 +1,4 @@
 #pragma once
 
-DWORD BreakNetbidclient();
+CString BreakNetbidclient();
 CStringA GetCurServer();

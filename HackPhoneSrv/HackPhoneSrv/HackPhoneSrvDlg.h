@@ -44,7 +44,7 @@ public:
 	afx_msg void OnBnClickedBnFindprice();
 	CDateTimeCtrl m_dpGo;
 	afx_msg void OnDtnDatetimechangeDpGo(NMHDR *pNMHDR, LRESULT *pResult);
-	CStatic m_staPrice;
+	//CStatic m_staPrice;
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	afx_msg void OnBnClickedBnMainwnd();
 	CStatic m_staServerInfo;

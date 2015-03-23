@@ -25,17 +25,6 @@
         android:onClick="bn10086_click"
         android:text="10086" />
 
-    <Button
-        android:id="@+id/bn01"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/bn10086"
-        android:layout_alignBottom="@+id/bn10086"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="26dp"
-        android:onClick="bn01_click"
-        android:text="01" />
-
     <EditText
         android:id="@+id/ip"
         android:layout_width="wrap_content"
@@ -49,23 +38,44 @@
         <requestFocus />
     </EditText>
 
-    <Button
-        android:id="@+id/bnset"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="67dp"
-        android:onClick="bnset_onClick"
-        android:text="确定" />
-
     <EditText
         android:id="@+id/port"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/bnset"
-        android:layout_alignLeft="@+id/bnset"
-        android:layout_marginBottom="34dp"
+        android:layout_alignLeft="@+id/ip"
+        android:layout_centerVertical="true"
         android:ems="10"
         android:hint="服务器端口" />
+
+    <Button
+        android:id="@+id/bnset"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/port"
+        android:layout_below="@+id/port"
+        android:layout_marginTop="14dp"
+        android:onClick="bnset_onClick"
+        android:text="确定" />
+
+    <Button
+        android:id="@+id/bn01"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/bn10086"
+        android:layout_alignBottom="@+id/bn10086"
+        android:layout_marginLeft="16dp"
+        android:layout_toRightOf="@+id/bn10086"
+        android:onClick="bn01_click"
+        android:text="01" />
+
+    <Button
+        android:id="@+id/bnHungup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/bn01"
+        android:layout_marginLeft="22dp"
+        android:layout_toRightOf="@+id/bn01"
+        android:onClick="bnHungup_onClick"
+        android:text="挂断" />
 
 </RelativeLayout>

@@ -18,10 +18,10 @@ CSocketSrv::~CSocketSrv(){
 	m_cc.clear();
 }
 
-void CSocketSrv::SendCmd(uint8_t cmd){
+void CSocketSrv::SendCmd(uint16_t cmd){
 	MAPCLIENT::iterator it;
 	for (it = m_cc.begin(); it != m_cc.end(); it++){
-		it->second->Send(&cmd, 1);
+		it->second->Send(&cmd, 2);
 	}
 }
 
