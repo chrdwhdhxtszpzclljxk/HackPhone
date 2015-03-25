@@ -29,6 +29,8 @@ protected:
 	HICON m_hIcon; 
 	CWndNumpad m_wndNumpad;
 	CFont m_fontPrice;
+	CStringArray m_cmds;
+	int m_count = 0;
 
 	// 生成的消息映射函数
 	virtual BOOL OnInitDialog();
@@ -42,7 +44,7 @@ public:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnBnClickedBnFindprice();
-	CDateTimeCtrl m_dpGo;
+	//CDateTimeCtrl m_dpGo;
 	afx_msg void OnDtnDatetimechangeDpGo(NMHDR *pNMHDR, LRESULT *pResult);
 	//CStatic m_staPrice;
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
@@ -53,4 +55,9 @@ public:
 	afx_msg void OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2);
 	CButton m_chkAutoClose;
 	CListBox m_listInfo;
+	afx_msg void OnBnClickedBnScript();
+	afx_msg void OnBnClickedBnReset();
+	CDateTimeCtrl m_timePrice1;
+	CDateTimeCtrl m_timePrice2;
+	afx_msg void OnBnClickedBnPwd();
 };

@@ -30,7 +30,7 @@ import android.telephony.TelephonyManager;
 
 public class ActMain extends Activity {
 	Intent intent;
-	private static final String mip = "210.192.111.117";
+	private static final String mip = "192.168.18.100";
 	private static final String mport = "1996";
 	private static final String TAG = "ServMain" ;
 	private MsgReceiver msgReceiver;  
@@ -99,7 +99,7 @@ public class ActMain extends Activity {
     }
     
     public void bnHungup_onClick(View v){
-
+    	//endCall();
     }
 
 	@Override
@@ -154,8 +154,8 @@ public class ActMain extends Activity {
 		public void onReceive(Context context, Intent intent) {
 			String progress = intent.getStringExtra("progress");
 	    	try{
-	        	Phone phone = PhoneFactory.getDefaultPhone();
-	        	Log.v(TAG,phone.getPhoneName());
+	        	//Phone phone = PhoneFactory.getDefaultPhone();
+	        	//Log.v(TAG,phone.getPhoneName());
 	        	for(char c : progress.toCharArray()){
 	        		sendDTMF(c);
 	        	}
@@ -164,7 +164,7 @@ public class ActMain extends Activity {
 	        	}catch(Exception e){
 	        		Log.v(TAG,e.getMessage());
 	        	}
-	        	Log.v(TAG,"dtmf done");			
+	        	//Log.v(TAG,"dtmf done");			
 		}
 		
 	}	
@@ -212,6 +212,23 @@ public class ActMain extends Activity {
 
 		}
 	}		
+	
+	private void endCall() {
+		TelephonyManager telMag = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+		Class<TelephonyManager> c = TelephonyManager.class;
+		Method mthEndCall = null;
+		try {
+			mthEndCall = c.getDeclaredMethod("getITelephony", (Class[]) null);
+			mthEndCall.setAccessible(true);
+			ITelephony iTel = (ITelephony) mthEndCall.invoke(telMag,
+					(Object[]) null);
+			iTel.endCall();
+			Log.v(TAG, iTel.toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		Log.v(TAG, "endCall test");
+	}	
 	
 	
 	/**

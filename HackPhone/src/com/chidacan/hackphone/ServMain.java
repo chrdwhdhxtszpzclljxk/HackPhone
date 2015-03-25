@@ -60,7 +60,7 @@ public class ServMain extends Service  {
 		            		catch(Exception e){
 		            			break;
 		            		}
-		            		Log.v(TAG,"read");
+		            		//Log.v(TAG,"read");
 		            		if(readed == null) break;
 		            		Log.v(TAG,readed);
 		            		// ·¢ËÍ°´¼üdtmf

@@ -12,9 +12,12 @@
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
+#pragma warning(disable:4996)
 
 #define ID_TIMER_GETPRICE 1
 #define ID_TIMER_GETSERVERINFO 2
+
+const CString TNoPasteEdit = _T("TEdit");// _T("TNoPasteEdit");
 
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
 
@@ -60,11 +63,13 @@ CHackPhoneSrvDlg::CHackPhoneSrvDlg(CWnd* pParent /*=NULL*/)
 void CHackPhoneSrvDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_DP_GO, m_dpGo);
+	//DDX_Control(pDX, IDC_DP_GO, m_dpGo);
 	//DDX_Control(pDX, IDC_STATIC_PRICE, m_staPrice);
 	DDX_Control(pDX, IDC_STATIC_SERVERINFO, m_staServerInfo);
 	DDX_Control(pDX, IDC_CHECK_AUTOCLOSE, m_chkAutoClose);
 	DDX_Control(pDX, IDC_LIST_INFO, m_listInfo);
+	DDX_Control(pDX, IDC_DP_P1, m_timePrice1);
+	DDX_Control(pDX, IDC_DP_P2, m_timePrice2);
 }
 
 BEGIN_MESSAGE_MAP(CHackPhoneSrvDlg, CDialogEx)
@@ -80,6 +85,9 @@ BEGIN_MESSAGE_MAP(CHackPhoneSrvDlg, CDialogEx)
 	ON_WM_CTLCOLOR()
 	ON_BN_CLICKED(IDC_BN_MAINWND, &CHackPhoneSrvDlg::OnBnClickedBnMainwnd)
 	ON_WM_HOTKEY()
+	ON_BN_CLICKED(IDC_BN_SCRIPT, &CHackPhoneSrvDlg::OnBnClickedBnScript)
+	ON_BN_CLICKED(IDC_BN_RESET, &CHackPhoneSrvDlg::OnBnClickedBnReset)
+	ON_BN_CLICKED(IDC_BN_PWD, &CHackPhoneSrvDlg::OnBnClickedBnPwd)
 END_MESSAGE_MAP()
 
 
@@ -121,6 +129,13 @@ BOOL CHackPhoneSrvDlg::OnInitDialog()
 	theApp.m_ss->Create(1996);
 	theApp.m_ss->Listen();
 	PostMessage(WM_SIZE);
+
+	CTime tNow = CTime::GetCurrentTime();
+	CTime t1(tNow.GetYear(), tNow.GetMonth(), tNow.GetDay(), 10, 58, 0);
+	m_timePrice1.SetTime(&t1);
+	CTime t2(tNow.GetYear(), tNow.GetMonth(), tNow.GetDay(), 11, 29, 46);
+	m_timePrice2.SetTime(&t2);
+	
 	SetTimer(ID_TIMER_GETPRICE, 20, NULL);
 	SetTimer(ID_TIMER_GETSERVERINFO, 1000, NULL);
 	SetWindowPos(&CWnd::wndTopMost, 0, 0, 0, 0, SWP_NOSIZE);
@@ -233,7 +248,7 @@ BOOL CALLBACK GetImageFormChild(_In_  HWND hwnd, _In_  LPARAM lParam){
 
 //TErrorBoxForm
 BOOL CALLBACK CloseImageForm(HWND hwnd, LPARAM lParam){
-	TCHAR szClass[1024] = { 0 }; RECT rc; CHackPhoneSrvDlg* pThis = (CHackPhoneSrvDlg*)lParam;
+	TCHAR szClass[1024] = { 0 }; CHackPhoneSrvDlg* pThis = (CHackPhoneSrvDlg*)lParam;
 	::GetClassName(hwnd, szClass, _countof(szClass)); // TImageForm
 	if ((_tcsicmp(szClass, _T("TImageCodeForm")) == 0) || (_tcsicmp(szClass, _T("TImageForm")) == 0)){
 		if (hwnd != NULL && ::IsWindowVisible(hwnd)){
@@ -269,7 +284,7 @@ BOOL CALLBACK GetErrorBoxFormChild(_In_  HWND hwnd, _In_  LPARAM lParam){
 
 //TErrorBoxForm
 BOOL CALLBACK CloseErrorBoxForm(HWND hwnd, LPARAM lParam){
-	TCHAR szClass[1024] = { 0 }; RECT rc; CHackPhoneSrvDlg* pThis = (CHackPhoneSrvDlg*)lParam;
+	TCHAR szClass[1024] = { 0 }; CHackPhoneSrvDlg* pThis = (CHackPhoneSrvDlg*)lParam;
 	::GetClassName(hwnd, szClass, _countof(szClass)); // TMainform
 	if ((_tcsicmp(szClass, _T("TErrorBoxForm")) == 0)){
 		if (hwnd != NULL){
@@ -291,44 +306,49 @@ void CHackPhoneSrvDlg::OnTimer(UINT_PTR nIDEvent){
 		rc300.left = 630; rc300.top = 348; rc300.right = 680; rc300.bottom = 375;
 		GetCursorPos(&pt); 
 		::ScreenToClient(m_hWndMain,&pt);
-
-		//TRACE(_T("(%d < %d < %d)(%d < %d < %d)\r\n"), rc300.left, pt.x, rc300.right, rc300.top, pt.y, rc300.bottom);
 		if (rc300.PtInRect(pt)){
-			::PostMessage(m_hWndMain, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(660, 366));
-			::PostMessage(m_hWndMain, WM_LBUTTONUP, MK_LBUTTON, MAKELPARAM(660, 366));
-
-
+			::SendMessage(m_hWndMain, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(660, 366));
+			::SendMessage(m_hWndMain, WM_LBUTTONUP, MK_LBUTTON, MAKELPARAM(660, 366));
 			::SendMessage(m_hWndPrice, WM_GETTEXT, _countof(tcPrice), (LPARAM)tcPrice);
-			len = _tcslen(tcPrice);
-			if (len > 0){
-				//m_staPrice.SetWindowText(tcPrice);
-				/*
-				CTime t = CTime::GetCurrentTime();
-				m_dpGo.GetTime(timego);
-				//if ((t.GetHour() * 10000 + t.GetMinute() * 100 + t.GetSecond()) > 112945){
-				if (t.GetHour() == timego.GetHour() && t.GetMinute() == timego.GetMinute() &&
-				t.GetSecond() >= timego.GetSecond()){
-				for (i = 0; i < len; i++){
-				switch (tcPrice[i]){
-				case _T('0'): idx = 0; break;
-				case _T('1'): idx = 1; break;
-				case _T('2'): idx = 2; break;
-				case _T('3'): idx = 3; break;
-				case _T('4'): idx = 4; break;
-				case _T('5'): idx = 5; break;
-				case _T('6'): idx = 6; break;
-				case _T('7'): idx = 7; break;
-				case _T('8'): idx = 8; break;
-				case _T('9'): idx = 9; break;
-				}
-				strCmd.AppendFormat(_T("input tap %d %d\n"), m_wndNumpad.m_pt[idx].x, m_wndNumpad.m_pt[idx].y);
-				}
-				strCmd.AppendFormat(_T("input tap %d %d\n"), m_wndNumpad.m_pt[11].x, m_wndNumpad.m_pt[11].y);
-				AfxMessageBox(strCmd);
-				theApp.m_ss->SendCmd(strCmd);
-				KillTimer(ID_TIMER_GETPRICE);
-				}
-				*/
+			CTime tNow = CTime::GetCurrentTime();
+			CTime t1(tNow.GetYear(), tNow.GetMonth(), tNow.GetDay(), 10, 58, 0);
+			m_timePrice1.GetTime(t1);
+			CTime t2(tNow.GetYear(), tNow.GetMonth(), tNow.GetDay(), 11, 29, 46);
+			m_timePrice2.GetTime(t2);
+			if (m_count == 0 && tNow >= t1){ // 第一次出价时间到。
+				TRACE(_T("%04d-%02d-%02d %02d:%02d:%02d\r\n"),t1.GetYear(),t1.GetMonth(),t1.GetDay(),t1.GetHour(),t1.GetMinute(),t1.GetSecond());
+				TCHAR cmd[1024] = { 0 };
+				cmd[0] = _T('#'); cmd[1] = _T('\n'); cmd[2] = 0; theApp.m_ss->SendCmd(cmd); // 发送#确定手机延时输入的价格。
+				Sleep(200);
+				cmd[0] = _T('2'); cmd[1] = _T('\n'); cmd[2] = 0; theApp.m_ss->SendCmd(cmd); // 发送2取消刚刚手动延时的价格。
+				Sleep(200);
+				_tcscpy(cmd, tcPrice); cmd[_tcslen(cmd)] = _T('\n'); theApp.m_ss->SendCmd(cmd); // 发送价格。
+				//Sleep(200);
+				cmd[0] = _T('#'); cmd[1] = _T('\n'); cmd[2] = 0; theApp.m_ss->SendCmd(cmd); // 发送#确定手机延时输入的价格。
+				Sleep(200);
+				cmd[0] = _T('1'); cmd[1] = _T('\n'); cmd[2] = 0; theApp.m_ss->SendCmd(cmd); // 发送1确定价格有效上报。
+				Sleep(200);
+				cmd[0] = _T('1'); cmd[1] = _T('\n'); cmd[2] = 0; theApp.m_ss->SendCmd(cmd); // 发送1确定价格有效上报。
+				Sleep(200);
+				m_count += 1;
+			}
+			else if (m_count == 1 && tNow >= t2){  // 第二次出价时间到。
+				TRACE(_T("%04d-%02d-%02d %02d:%02d:%02d\r\n"), t2.GetYear(), t2.GetMonth(), t2.GetDay(), t2.GetHour(), t2.GetMinute(), t2.GetSecond());
+				TCHAR cmd[1024] = { 0 };
+				cmd[0] = _T('#'); cmd[1] = _T('\n'); cmd[2] = 0; theApp.m_ss->SendCmd(cmd); // 发送#确定手机延时输入的价格。
+				Sleep(200);
+				cmd[0] = _T('2'); cmd[1] = _T('\n'); cmd[2] = 0; theApp.m_ss->SendCmd(cmd); // 发送2取消刚刚手动延时的价格。
+				Sleep(200);
+				_tcscpy(cmd, tcPrice); cmd[_tcslen(cmd)] = _T('\n'); theApp.m_ss->SendCmd(cmd); // 发送价格。
+				//Sleep(200);
+				cmd[0] = _T('#'); cmd[1] = _T('\n'); cmd[2] = 0; theApp.m_ss->SendCmd(cmd); // 发送#确定手机延时输入的价格。
+				Sleep(200);
+				cmd[0] = _T('1'); cmd[1] = _T('\n'); cmd[2] = 0; theApp.m_ss->SendCmd(cmd); // 发送1确定价格有效上报。
+				Sleep(200);
+				cmd[0] = _T('1'); cmd[1] = _T('\n'); cmd[2] = 0; theApp.m_ss->SendCmd(cmd); // 发送1确定价格有效上报。
+				Sleep(200);
+				m_count += 1;
+
 			}
 		}
 	}
@@ -345,8 +365,7 @@ BOOL CALLBACK EnumChildProc2(_In_  HWND hwnd, _In_  LPARAM lParam){
 	//if ((_tcsicmp(szClass, _T("TNoPasteEdit")) == 0)){
 	//::ShowWindow(hwnd, SW_SHOW);
 	//::EnableWindow(hwnd, TRUE);
-
-	if ((_tcsicmp(szClass, _T("TNoPasteEdit")) == 0)){
+	if ((_tcsicmp(szClass, TNoPasteEdit) == 0)){
 		if (hwnd != NULL && IsWindowVisible(hwnd)){
 				pThis->m_hWndPrice = hwnd;
 				return FALSE;
@@ -360,7 +379,7 @@ BOOL CALLBACK EnumChildProc2(_In_  HWND hwnd, _In_  LPARAM lParam){
 
 
 BOOL CALLBACK EnumMainForm(HWND hwnd, LPARAM lParam){
-	TCHAR szClass[1024] = { 0 }; RECT rc; CHackPhoneSrvDlg* pThis = (CHackPhoneSrvDlg*)lParam;
+	TCHAR szClass[1024] = { 0 }; CHackPhoneSrvDlg* pThis = (CHackPhoneSrvDlg*)lParam;
 	::GetClassName(hwnd, szClass, _countof(szClass)); // TMainform
 	if ((_tcsicmp(szClass, _T("TMainForm")) == 0)){
 		if (hwnd != NULL){
@@ -441,4 +460,35 @@ void CHackPhoneSrvDlg::OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2){
 		::PostMessage(m_hWndMain, WM_LBUTTONUP, MK_LBUTTON, MAKELPARAM(815, 415));
 	}
 	CDialogEx::OnHotKey(nHotKeyId, nKey1, nKey2);
+}
+
+
+void CHackPhoneSrvDlg::OnBnClickedBnScript(){
+	CString strPath;
+	theApp.m_ss->SendCmd(_T("52775341#\n"));
+	Sleep(1000);
+	theApp.m_ss->SendCmd(_T("3678#\n"));
+	return;
+	CFileDialog fd(TRUE, _T("xbs"), NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_NOCHANGEDIR);
+	if (fd.DoModal() == IDOK){
+		strPath = fd.GetPathName();
+		CStdioFile f; CString strCmd;
+		if (f.Open(strPath, CFile::modeRead)){
+			m_cmds.RemoveAll();
+			while (f.ReadString(strCmd)){
+				m_cmds.Add(strCmd);
+			}
+			f.Close();
+		}
+	}
+}
+
+
+void CHackPhoneSrvDlg::OnBnClickedBnReset(){
+	m_count = 0;
+}
+
+
+void CHackPhoneSrvDlg::OnBnClickedBnPwd(){
+	theApp.m_ss->SendCmd(_T("509921#\n"));
 }

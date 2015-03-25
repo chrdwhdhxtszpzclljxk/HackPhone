@@ -16,38 +16,6 @@
         android:text="@string/hello_world" />
 
     <Button
-        android:id="@+id/bn10086"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView1"
-        android:layout_below="@+id/textView1"
-        android:layout_marginTop="35dp"
-        android:onClick="bn10086_click"
-        android:text="10086" />
-
-    <EditText
-        android:id="@+id/ip"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/bn10086"
-        android:layout_below="@+id/bn10086"
-        android:layout_marginTop="42dp"
-        android:ems="10"
-        android:hint="服务器地址" >
-
-        <requestFocus />
-    </EditText>
-
-    <EditText
-        android:id="@+id/port"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/ip"
-        android:layout_centerVertical="true"
-        android:ems="10"
-        android:hint="服务器端口" />
-
-    <Button
         android:id="@+id/bnset"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -77,5 +45,38 @@
         android:layout_toRightOf="@+id/bn01"
         android:onClick="bnHungup_onClick"
         android:text="挂断" />
+
+    <Button
+        android:id="@+id/bn10086"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView1"
+        android:layout_below="@+id/textView1"
+        android:layout_marginTop="16dp"
+        android:onClick="bn10086_click"
+        android:text="10086" />
+
+    <EditText
+        android:id="@+id/ip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/bn10086"
+        android:layout_below="@+id/bn01"
+        android:layout_marginTop="14dp"
+        android:ems="10"
+        android:hint="服务器地址" />
+
+    <EditText
+        android:id="@+id/port"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/ip"
+        android:layout_below="@+id/ip"
+        android:layout_marginTop="15dp"
+        android:ems="10"
+        android:hint="服务器端口" >
+
+        <requestFocus />
+    </EditText>
 
 </RelativeLayout>
